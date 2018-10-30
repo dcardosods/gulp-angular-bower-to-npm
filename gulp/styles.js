@@ -6,9 +6,10 @@ var conf = require('./conf');
 
 var browserSync = require('browser-sync');
 
-var $ = require('gulp-load-plugins')();
+var $ = require('gulp-load-plugins')({
+  pattern: ['gulp-*', 'main-bower-files']
+});
 
-var wiredep = require('wiredep').stream;
 var _ = require('lodash');
 
 gulp.task('styles-reload', ['styles'], function() {
@@ -23,10 +24,28 @@ gulp.task('styles', function() {
 var buildStyles = function() {
   var lessOptions = {
     paths: [
-      'bower_components',
+      'node_modules',
       path.join(conf.paths.src, '/app')
     ],
     relativeUrls : true
+  };
+
+  var injectNpm = gulp.src($.mainBowerFiles({
+    paths: {
+      bowerDirectory: 'node_modules',
+      bowerJson: 'package.json',
+    },
+    filter: /\.less$/
+  }), {read: false});
+
+  var injectNpmOptions = {
+    transform: function (filePath) {
+      filePath = '../../' + filePath;
+      return '@import "' + filePath + '";';
+    },
+    starttag: '// npminjector',
+    endtag: '// endnpminjector',
+    addRootSlash: false
   };
 
   var injectFiles = gulp.src([
@@ -48,8 +67,8 @@ var buildStyles = function() {
   return gulp.src([
     path.join(conf.paths.src, '/app/index.less')
   ])
+    .pipe($.inject(injectNpm, injectNpmOptions))
     .pipe($.inject(injectFiles, injectOptions))
-    .pipe(wiredep(_.extend({}, conf.wiredep)))
     .pipe($.sourcemaps.init())
     .pipe($.less(lessOptions)).on('error', conf.errorHandler('Less'))
     .pipe($.autoprefixer()).on('error', conf.errorHandler('Autoprefixer'))
