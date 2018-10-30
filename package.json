@@ -63,6 +63,23 @@
     "chalk": "~1.1.1",
     "uglify-save-license": "~0.4.1"
   },
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "less/bootstrap.less",
+        "dist/fonts/glyphicons-halflings-regular.eot",
+        "dist/fonts/glyphicons-halflings-regular.svg",
+        "dist/fonts/glyphicons-halflings-regular.ttf",
+        "dist/fonts/glyphicons-halflings-regular.woff",
+        "dist/fonts/glyphicons-halflings-regular.woff2"
+      ]
+    },
+    "angular-ui-bootstrap": {
+      "main": [
+        "dist/ui-bootstrap-tpls.js"
+      ]
+    }
+  },
   "engines": {
     "node": ">=0.10.0"
   }
